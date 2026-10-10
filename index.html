@@ -87,7 +87,7 @@ body {
   pointer-events: none;
 }
 
-/* ==== МАШИНА ИГРОКА — Care1.png ==== */
+/* ==== МАШИНА ИГРОКА ==== */
 #car {
   position: absolute;
   width: 56px;
@@ -108,11 +108,11 @@ body {
   height: 65px;
   background: url('Care1.png') center/contain no-repeat;
   filter: drop-shadow(0 4px 8px #000000aa);
-  transform: translate(-50%, -50%) rotate(90deg);
+  transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
 }
 
-/* ==== МАШИНА КОПОВ — Pcare1.png ==== */
+/* ==== МАШИНА КОПОВ ==== */
 .police {
   position: absolute;
   width: 56px;
@@ -133,40 +133,53 @@ body {
   height: 65px;
   background: url('Pcare1.png') center/contain no-repeat;
   filter: drop-shadow(0 4px 8px #000000aa);
-  transform: translate(-50%, -50%) rotate(90deg);
+  transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center;
 }
 
-.siren {
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 26px;
-  height: 8px;
-  border-radius: 4px;
-  animation: sirenBlink 0.4s infinite alternate;
-  z-index: 10;
-  pointer-events: none;
-}
-@keyframes sirenBlink {
-  0% { background: #ff0000; box-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000; }
-  100% { background: #0066ff; box-shadow: 0 0 20px #0066ff, 0 0 40px #0066ff; }
-}
-
+/* Дым */
 .smoke {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, rgba(200,200,200,0.7) 0%, rgba(200,200,200,0) 70%);
   border-radius: 50%;
-  z-index: 4;
   pointer-events: none;
+  z-index: 4;
+}
+.smoke.drift {
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle, rgba(220,220,220,0.75) 0%, rgba(220,220,220,0) 70%);
   animation: smokeFade 1s forwards;
+}
+.smoke.idle {
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, rgba(200,200,200,0.4) 0%, rgba(200,200,200,0) 70%);
+  animation: smokeIdle 0.8s forwards;
 }
 @keyframes smokeFade {
   0% { transform: scale(0.5); opacity: 0.9; }
-  100% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes smokeIdle {
+  0% { transform: scale(0.4); opacity: 0.5; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+/* Всплывающие очки */
+.floatScore {
+  position: absolute;
+  color: #ffd700;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 0 8px #ffd700, 2px 2px 3px #000;
+  z-index: 25;
+  pointer-events: none;
+  animation: floatUp 1.2s forwards;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  20% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-60px) scale(1); opacity: 0; }
 }
 
 /* ==== HUD ==== */
@@ -189,6 +202,29 @@ body {
   font-weight: bold;
   border: 2px solid #ffd70088;
 }
+#scoreHud {
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid #ffd70088;
+}
+#recordHud {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  color: #ffd700;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  z-index: 20;
+  pointer-events: none;
+}
 #coinHud {
   background: rgba(0,0,0,0.7);
   color: #ffd700;
@@ -206,7 +242,7 @@ body {
   color: #ff5252;
   padding: 8px 14px;
   border-radius: 10px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   border: 2px solid #ff525288;
   z-index: 20;
@@ -214,13 +250,13 @@ body {
 }
 #timerHud {
   position: absolute;
-  top: 105px;
+  top: 100px;
   left: 15px;
   background: rgba(0,0,0,0.7);
   color: #4fc3f7;
   padding: 8px 14px;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   border: 2px solid #4fc3f788;
   z-index: 20;
@@ -228,7 +264,7 @@ body {
 }
 #driftHud {
   position: absolute;
-  top: 65px;
+  top: 60px;
   left: 50%;
   transform: translateX(-50%);
   color: #ff5722;
@@ -238,6 +274,7 @@ body {
   z-index: 20;
   opacity: 0;
   transition: opacity 0.2s;
+  pointer-events: none;
 }
 #driftHud.show { opacity: 1; }
 #alertMsg {
@@ -365,16 +402,20 @@ body {
     <div id="speedo">🚗 0 км/ч</div>
     <div id="coinHud">🪙 <span id="coinCount">0</span></div>
   </div>
+  <div id="recordHud">🏆 Рекорд: <span id="recordValue">0</span></div>
   <div id="crashHud">💥 <span id="crashCount">0</span>/3</div>
-  <div id="timerHud">🚨 <span id="copCount">0</span> копов</div>
-  <div id="driftHud">🔥 ДРИФТ!</div>
+  <div id="timerHud">🚨 <span id="copCount">0</span> копов · ⭐ <span id="scoreValue">0</span></div>
+  <div id="driftHud">🔥 ДРИФТ! +10</div>
   <div id="alertMsg">🚨 КОПЫ!</div>
 
   <div id="hint">◀ ▶ руль · 2 пальца = назад</div>
 
   <div id="gameOverMsg">
     <h1>💥 РАЗБИЛСЯ!</h1>
-    <p>Монет собрано: <span id="finalCoinsGame">0</span> 🪙</p>
+    <p>Очков: <span id="finalScoreGame">0</span> ⭐</p>
+    <p>Монет: <span id="finalCoinsGame">0</span> 🪙</p>
+    <p style="color:#ffd700;">🏆 Рекорд: <span id="finalRecordGame">0</span></p>
+    <p style="color:#aaa; font-size:14px;" id="newRecordMsg"></p>
     <button id="restartGameBtn">Заново</button>
   </div>
 </div>
@@ -389,7 +430,11 @@ const TURN_SPEED = 0.045;
 const TURN_SPEED_LOSS = 0.998;
 const DRIFT_FACTOR = 0.75;
 const DRIFT_THRESHOLD = 0.02;
-const SMOKE_INTERVAL = 60;
+const DRIFT_MIN_TIME = 1000;      // дрифт считается с 1 сек
+const DRIFT_POINTS_PER_SEC = 10;  // очков за секунду дрифта
+const IDLE_POINTS_PER_SEC = 1;    // очков за секунду езды
+const SMOKE_INTERVAL_DRIFT = 60;  // мс между дымом при дрифте
+const SMOKE_INTERVAL_IDLE = 220;  // мс между дымом при простой езде
 const COIN_SPAWN_RADIUS = 800;
 const COIN_COUNT = 60;
 const MAX_CRASHES = 3;
@@ -398,8 +443,9 @@ const INVINCIBLE_TIME = 1500;
 const FIRST_COP_TIME = 20000;
 const COP_ADD_INTERVAL = 15000;
 const MAX_COPS = 5;
-const COP_BASE_SPEED = 5.5;
-const COP_SPEED_VAR = 0.5;
+const COP_STRAIGHT_SPEED = 9.0;
+const COP_TURN_SPEED = 4.5;
+const COP_SPEED_VAR = 0.4;
 const COP_CAUGHT_DIST = 40;
 
 // ==== ЭЛЕМЕНТЫ ====
@@ -415,8 +461,13 @@ const touchLeft = document.getElementById('touchLeft');
 const touchRight = document.getElementById('touchRight');
 const gameOverMsg = document.getElementById('gameOverMsg');
 const finalCoinsGameEl = document.getElementById('finalCoinsGame');
+const finalScoreGameEl = document.getElementById('finalScoreGame');
+const finalRecordGameEl = document.getElementById('finalRecordGame');
+const newRecordMsgEl = document.getElementById('newRecordMsg');
 const restartGameBtn = document.getElementById('restartGameBtn');
 const copCountEl = document.getElementById('copCount');
+const scoreValueEl = document.getElementById('scoreValue');
+const recordValueEl = document.getElementById('recordValue');
 const alertMsg = document.getElementById('alertMsg');
 
 // ==== СОСТОЯНИЕ ====
@@ -427,8 +478,14 @@ let obstacles = [];
 let skidMarks = [];
 let cops = [];
 let lastSmoke = 0;
+let lastIdleSmoke = 0;
 let coinsCollected = 0;
 let savedCoins = parseInt(localStorage.getItem('driftCoins') || '0');
+let savedRecord = parseInt(localStorage.getItem('driftRecord') || '0');
+let score = 0;                    // текущий счёт за забег
+let driftStartTime = 0;           // когда начал дрифтить
+let driftPointsGiven = 0;         // сколько очков уже начислили за текущий дрифт
+let lastIdleScoreTime = 0;        // последнее начисление за езду
 let lastCoinDist = 0;
 let crashCount = 0;
 let invincibleUntil = 0;
@@ -437,9 +494,25 @@ let gameStartTime = 0;
 let lastCopSpawn = 0;
 let copsSpawned = 0;
 let gameOverReason = '';
+let newRecord = false;
 
 // ==== УТИЛИТЫ ====
 function rand(min, max) { return Math.random() * (max - min) + min; }
+
+function addScore(pts) {
+  score += pts;
+  scoreValueEl.textContent = score;
+}
+
+function showFloatScore(x, y, text) {
+  const el = document.createElement('div');
+  el.className = 'floatScore';
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  game.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
 
 // ==== ГЕНЕРАЦИЯ МИРА ====
 function ensureWorldAround(x, y) {
@@ -520,7 +593,7 @@ function spawnCop() {
 
   const el = document.createElement('div');
   el.className = 'police';
-  el.innerHTML = '<div class="siren"></div><div class="policeBody"><div class="policeImg"></div></div>';
+  el.innerHTML = '<div class="policeBody"><div class="policeImg"></div></div>';
   world.appendChild(el);
 
   cops.push({
@@ -528,7 +601,8 @@ function spawnCop() {
     x: cx,
     y: cy,
     angle: 0,
-    speed: COP_BASE_SPEED + rand(-COP_SPEED_VAR, COP_SPEED_VAR),
+    speed: COP_TURN_SPEED,
+    speedVar: rand(-COP_SPEED_VAR, COP_SPEED_VAR),
     vx: 0,
     vy: 0,
   });
@@ -549,12 +623,17 @@ function updateCops(dt) {
     let angleDiff = targetAngle - cop.angle;
     while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
     while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-    cop.angle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.06 * dt);
+    cop.angle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), 0.045 * dt);
+
+    const alignment = Math.cos(angleDiff);
+    const speedFactor = Math.max(0, alignment);
+    const targetSpeed = COP_TURN_SPEED + (COP_STRAIGHT_SPEED - COP_TURN_SPEED) * speedFactor;
+    cop.speed = cop.speed + (targetSpeed + cop.speedVar - cop.speed) * 0.05 * dt;
 
     const fwdX = Math.sin(cop.angle) * cop.speed;
     const fwdY = -Math.cos(cop.angle) * cop.speed;
-    cop.vx += (fwdX - cop.vx) * 0.1 * dt;
-    cop.vy += (fwdY - cop.vy) * 0.1 * dt;
+    cop.vx += (fwdX - cop.vx) * 0.12 * dt;
+    cop.vy += (fwdY - cop.vy) * 0.12 * dt;
 
     cop.x += cop.vx * dt;
     cop.y += cop.vy * dt;
@@ -604,9 +683,9 @@ document.addEventListener('keyup', (e) => {
 });
 
 // ==== ЭФФЕКТЫ ====
-function spawnSmoke(x, y) {
+function spawnSmoke(x, y, type) {
   const s = document.createElement('div');
-  s.className = 'smoke';
+  s.className = 'smoke ' + type;
   s.style.left = (x - 10) + 'px';
   s.style.top = (y - 10) + 'px';
   ground.appendChild(s);
@@ -649,7 +728,20 @@ function crash(now) {
 function endGame() {
   if (!gameRunning) return;
   gameRunning = false;
+
+  newRecord = false;
+  if (score > savedRecord) {
+    savedRecord = score;
+    localStorage.setItem('driftRecord', savedRecord);
+    newRecord = true;
+  }
+  recordValueEl.textContent = savedRecord;
+
+  finalScoreGameEl.textContent = score;
   finalCoinsGameEl.textContent = coinsCollected;
+  finalRecordGameEl.textContent = savedRecord;
+  newRecordMsgEl.textContent = newRecord ? '🎉 НОВЫЙ РЕКОРД!' : '';
+
   document.querySelector('#gameOverMsg h1').textContent = gameOverReason;
   gameOverMsg.classList.add('show');
 }
@@ -675,6 +767,11 @@ restartGameBtn.addEventListener('click', () => {
   lastCopSpawn = gameStartTime;
   copsSpawned = 0;
   copCountEl.textContent = 0;
+  score = 0;
+  scoreValueEl.textContent = 0;
+  driftStartTime = 0;
+  driftPointsGiven = 0;
+  lastIdleScoreTime = gameStartTime;
 
   cops.forEach(c => c.el.remove());
   cops = [];
@@ -686,9 +783,11 @@ restartGameBtn.addEventListener('click', () => {
 let lastTime = performance.now();
 gameStartTime = performance.now();
 lastCopSpawn = gameStartTime;
+lastIdleScoreTime = gameStartTime;
 
 function loop(now) {
   const dt = Math.min((now - lastTime) / 16.67, 2);
+  const dtMs = now - lastTime;
   lastTime = now;
 
   if (!gameRunning) {
@@ -696,6 +795,7 @@ function loop(now) {
     return;
   }
 
+  // Спавн копов
   const elapsed = now - gameStartTime;
   if (elapsed > FIRST_COP_TIME) {
     if (copsSpawned === 0) {
@@ -707,6 +807,14 @@ function loop(now) {
     }
   }
 
+  // Очки за езду: +1 в секунду
+  if (now - lastIdleScoreTime >= 1000) {
+    const secondsPassed = Math.floor((now - lastIdleScoreTime) / 1000);
+    addScore(secondsPassed * IDLE_POINTS_PER_SEC);
+    lastIdleScoreTime += secondsPassed * 1000;
+  }
+
+  // Управление
   let turnInput = 0;
   if (keys.left) turnInput -= 1;
   if (keys.right) turnInput += 1;
@@ -738,6 +846,32 @@ function loop(now) {
   car.x += car.vx * dt;
   car.y += car.vy * dt;
 
+  // ==== ДРИФТ ОЧКИ ====
+  if (car.drifting) {
+    if (driftStartTime === 0) {
+      driftStartTime = now;
+      driftPointsGiven = 0;
+    } else {
+      const driftDuration = now - driftStartTime;
+      if (driftDuration >= DRIFT_MIN_TIME) {
+        const secondsDrifting = Math.floor(driftDuration / 1000);
+        const pointsShouldBe = secondsDrifting * DRIFT_POINTS_PER_SEC;
+        if (pointsShouldBe > driftPointsGiven) {
+          const gained = pointsShouldBe - driftPointsGiven;
+          addScore(gained);
+          driftPointsGiven = pointsShouldBe;
+          const camX = game.clientWidth / 2;
+          const camY = game.clientHeight / 2;
+          showFloatScore(camX + 30, camY - 60, '+' + gained);
+        }
+      }
+    }
+  } else {
+    driftStartTime = 0;
+    driftPointsGiven = 0;
+  }
+
+  // Столкновения
   for (const o of obstacles) {
     const d = Math.hypot(car.x - o.x, car.y - o.y);
     if (d < o.r + 25) {
@@ -751,6 +885,7 @@ function loop(now) {
     }
   }
 
+  // Монеты
   for (const c of coins) {
     if (c.collected) continue;
     if (Math.hypot(car.x - c.x, car.y - c.y) < 30) {
@@ -766,6 +901,7 @@ function loop(now) {
   ensureWorldAround(car.x, car.y);
   updateCops(dt);
 
+  // Камера
   const camX = game.clientWidth / 2;
   const camY = game.clientHeight / 2;
   ground.style.transform = 'translate(' + (camX - car.x) + 'px, ' + (camY - car.y) + 'px)';
@@ -786,26 +922,37 @@ function loop(now) {
     cop.el.style.transform = 'rotate(' + cop.angle + 'rad)';
   }
 
-  if (car.drifting && now - lastSmoke > SMOKE_INTERVAL) {
+  // ==== ДЫМ ====
+  const backOffset = 25;
+  const sideOffset = 22;
+  const bx = car.x - Math.sin(car.angle) * backOffset;
+  const by = car.y + Math.cos(car.angle) * backOffset;
+  const px = Math.cos(car.angle) * sideOffset;
+  const py = Math.sin(car.angle) * sideOffset;
+
+  // Дым при дрифте
+  if (car.drifting && now - lastSmoke > SMOKE_INTERVAL_DRIFT) {
     lastSmoke = now;
-    const backOffset = 25;
-    const sideOffset = 22;
-    const bx = car.x - Math.sin(car.angle) * backOffset;
-    const by = car.y + Math.cos(car.angle) * backOffset;
-    const px = Math.cos(car.angle) * sideOffset;
-    const py = Math.sin(car.angle) * sideOffset;
-    spawnSmoke(2000 + bx - px, 2000 + by - py);
-    spawnSmoke(2000 + bx + px, 2000 + by + py);
+    spawnSmoke(2000 + bx - px, 2000 + by - py, 'drift');
+    spawnSmoke(2000 + bx + px, 2000 + by + py, 'drift');
     spawnSkid(2000 + bx - px, 2000 + by - py, car.angle);
     spawnSkid(2000 + bx + px, 2000 + by + py, car.angle);
   }
+  // Лёгкий дым при езде
+  else if (!car.drifting && Math.abs(car.speed) > 1.5 && now - lastIdleSmoke > SMOKE_INTERVAL_IDLE) {
+    lastIdleSmoke = now;
+    if (Math.random() < 0.5) spawnSmoke(2000 + bx - px, 2000 + by - py, 'idle');
+    else spawnSmoke(2000 + bx + px, 2000 + by + py, 'idle');
+  }
 
+  // HUD
   speedoEl.textContent = '🚗 ' + Math.round(car.speed * 25) + ' км/ч';
   driftHudEl.classList.toggle('show', car.drifting);
 
   requestAnimationFrame(loop);
 }
 
+recordValueEl.textContent = savedRecord;
 coinCountEl.textContent = savedCoins;
 requestAnimationFrame(loop);
 </script>
