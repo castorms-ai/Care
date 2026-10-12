@@ -3,291 +3,487 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра</title>
+    <title>Взлом профиля</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ===== СТАРТОВЫЙ ЭКРАН ===== */
-        #startScreen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #1a1a2e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 10000;
-        }
-        #startScreen h1 {
-            color: white;
-            font-family: Arial, sans-serif;
-            font-size: 28px;
-            margin-bottom: 40px;
-            letter-spacing: 2px;
-        }
-        #playBtn {
-            padding: 25px 70px;
-            font-size: 28px;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            color: white;
-            background: #e63946;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 0 40px rgba(230, 57, 70, 0.7);
-            transition: 0.2s;
-            letter-spacing: 2px;
-        }
-        #playBtn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 20px rgba(230, 57, 70, 0.9);
-        }
-
-        /* ===== ОСНОВНОЙ ЭКРАН ===== */
         body {
-            background: #0000aa;
-            color: white;
+            background: #0d0d0d;
+            color: #e0e0e0;
             font-family: 'Courier New', monospace;
             height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-        h1.main-title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            letter-spacing: 3px;
-            font-family: Arial, sans-serif;
-            white-space: nowrap;
-            z-index: 10;
-        }
-        .progress-container {
-            width: 85%;
-            max-width: 450px;
-            height: 28px;
-            border: 2px solid white;
-            margin-bottom: 25px;
-            background: #000055;
-            z-index: 10;
-        }
-        #progress-bar {
-            height: 100%;
-            width: 0%;
-            background: white;
-            transition: width 0.1s;
-        }
-        #log {
-            font-size: 15px;
-            color: #ffffff;
-            height: 30px;
-            width: 85%;
-            max-width: 450px;
-            overflow: hidden;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            z-index: 10;
+            overflow-y: auto;
+            padding: 15px;
         }
 
-        /* Всплывающие "драйверы" */
-        .popup {
-            position: fixed;
-            background: black;
-            color: white;
-            border: 2px solid white;
-            padding: 8px 14px;
+        /* ===== ШАПКА ===== */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+        #header .stat {
+            font-size: 14px;
+        }
+        #header .stat span {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        #reputation { color: #ffaa00; }
+
+        /* ===== ПРОФИЛЬ ===== */
+        #profile {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        #profile .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        #profile h2 {
+            color: #fff;
+            font-size: 20px;
+        }
+        #profile .username {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        #profile .info {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* ===== ТАБЫ ===== */
+        #tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #aaa;
+            border-radius: 20px;
             font-family: 'Courier New', monospace;
             font-size: 13px;
-            z-index: 999;
-            pointer-events: none;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .popup .title {
+        .tab.active {
+            background: #00ff00;
+            color: #000;
             font-weight: bold;
-            border-bottom: 1px solid #444;
-            padding-bottom: 3px;
-            margin-bottom: 3px;
-            font-size: 11px;
+            border-color: #00ff00;
         }
 
-        /* Финальный экран с черепом */
-        #finalScreen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: black;
-            display: none;
+        /* ===== КОНТЕНТ ===== */
+        #content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 200px;
+            margin-bottom: 15px;
+        }
+        .post {
+            border-bottom: 1px solid #2a2a2a;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .post:last-child { border-bottom: none; }
+        .post:hover { background: #222; padding-left: 8px; }
+        .post.found {
+            background: #1a3a1a;
+            border-left: 3px solid #00ff00;
+            padding-left: 10px;
+        }
+        .post .text {
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .post .meta {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .photo-item {
+            background: #222;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .photo-item:hover { background: #2a2a2a; }
+        .photo-item.found { border-color: #00ff00; background: #1a3a1a; }
+        .friend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .friend:last-child { border-bottom: none; }
+        .friend:hover { background: #222; }
+        .friend.found { background: #1a3a1a; padding-left: 8px; }
+        .friend .f-avatar {
+            width: 35px; height: 35px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            z-index: 9999;
+            font-size: 16px;
         }
-        #skull {
-            font-size: 150px;
-            color: red;
-            text-shadow: 0 0 30px red, 0 0 60px red;
-            animation: pulse 1s infinite;
+        .friend .f-name { font-size: 14px; color: #ddd; }
+
+        /* ===== ПОДСКАЗКИ ===== */
+        #clues {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
+        #clues h3 {
+            font-size: 14px;
+            color: #ffaa00;
+            margin-bottom: 10px;
         }
-        #finalText {
-            color: red;
-            font-size: 24px;
-            font-family: Arial, sans-serif;
-            margin-top: 20px;
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px red;
+        .clue-item {
+            font-size: 13px;
+            color: #00ff00;
+            padding: 5px 0;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .clue-item:last-child { border-bottom: none; }
+        .clue-empty {
+            color: #555;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* ===== ВВОД ПАРОЛЯ ===== */
+        #passwordSection {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        #passwordSection h3 {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        #passwordInput {
+            width: 100%;
+            padding: 12px;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        #passwordInput:focus { border-color: #00ff00; }
+        #submitBtn {
+            width: 100%;
+            padding: 12px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #submitBtn:hover { background: #00cc00; }
+        #submitBtn:disabled { background: #333; color: #666; cursor: not-allowed; }
+        #attempts {
+            font-size: 13px;
+            color: #ff6666;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* ===== СООБЩЕНИЕ ===== */
+        #message {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+        #message.success { background: #1a3a1a; color: #00ff00; border: 1px solid #00ff00; display: block; }
+        #message.fail { background: #3a1a1a; color: #ff4444; border: 1px solid #ff4444; display: block; }
+
+        /* ===== КНОПКА НОВОГО ЗАДАНИЯ ===== */
+        #nextBtn {
+            width: 100%;
+            padding: 12px;
+            background: #ffaa00;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== СТАРТОВЫЙ ЭКРАН ===== -->
-    <div id="startScreen">
-        <h1>СИСТЕМНАЯ ИГРА</h1>
-        <button id="playBtn">НАЧАТЬ ИГРАТЬ</button>
+    <!-- ШАПКА -->
+    <div id="header">
+        <div class="stat">💰 <span id="money">0</span>₽</div>
+        <div class="stat">⭐ <span id="reputation">100</span></div>
     </div>
 
-    <!-- ===== ОСНОВНОЙ ЭКРАН ===== -->
-    <h1 class="main-title" id="mainTitle" style="display:none;">ВЗЛОМ ДАННЫХ</h1>
-
-    <div class="progress-container" id="progressContainer" style="display:none;">
-        <div id="progress-bar"></div>
+    <!-- ПРОФИЛЬ -->
+    <div id="profile">
+        <div class="avatar">👤</div>
+        <h2>Вася Петров</h2>
+        <div class="username">@vasya_2008</div>
+        <div class="info">
+            🎂 15.06.2008<br>
+            🏙 Москва<br>
+            ⚽ Спартак<br>
+            🐱 Кот Барсик
+        </div>
     </div>
 
-    <div id="log" style="display:none;">Инициализация...</div>
-
-    <!-- Финальный экран -->
-    <div id="finalScreen">
-        <div id="skull">☠</div>
-        <div id="finalText">спасибо</div>
+    <!-- ТАБЫ -->
+    <div id="tabs">
+        <button class="tab active" data-tab="posts">📝 Посты</button>
+        <button class="tab" data-tab="photos">📷 Фото</button>
+        <button class="tab" data-tab="friends">👥 Друзья</button>
     </div>
+
+    <!-- КОНТЕНТ -->
+    <div id="content"></div>
+
+    <!-- ПОДСКАЗКИ -->
+    <div id="clues">
+        <h3>🔍 Найденные подсказки:</h3>
+        <div id="clueList">
+            <div class="clue-empty">Пока ничего не найдено... Ищи внимательно.</div>
+        </div>
+    </div>
+
+    <!-- ВВОД ПАРОЛЯ -->
+    <div id="passwordSection">
+        <h3>🔐 Введи пароль:</h3>
+        <input type="text" id="passwordInput" placeholder="Пароль..." autocomplete="off">
+        <button id="submitBtn">ВЗЛОМАТЬ</button>
+        <div id="attempts">Попыток осталось: 3</div>
+    </div>
+
+    <!-- СООБЩЕНИЕ -->
+    <div id="message"></div>
+
+    <!-- КНОПКА СЛЕДУЮЩЕГО ЗАДАНИЯ -->
+    <button id="nextBtn">СЛЕДУЮЩЕЕ ЗАДАНИЕ</button>
 
     <script>
-        const logMessages = [
-            "SYSTEM_UI", "SETTINGS_PROVIDER", "SECURE_SETTINGS", "WIFI_SERVICE",
-            "BLUETOOTH_SERVICE", "AUDIO_SERVICE", "CAMERA_SERVICE", "LOCATION_SERVICE",
-            "PACKAGE_MANAGER", "ACTIVITY_MANAGER", "POWER_MANAGER", "BATTERY_STATS",
-            "TELEPHONY_SERVICE", "CONNECTIVITY_SERVICE", "DOWNLOAD_MANAGER", "ACCOUNT_MANAGER",
-            "CONTENT_PROVIDER", "MEDIA_STORE", "CONTACTS_PROVIDER", "CALENDAR_PROVIDER",
-            "CALL_LOG", "SMS_PROVIDER", "USER_DICTIONARY", "INPUT_METHOD",
-            "ACCESSIBILITY_SERVICE", "NOTIFICATION_SERVICE", "JOB_SCHEDULER", "ALARM_MANAGER",
-            "VIBRATOR_SERVICE", "SENSOR_SERVICE", "STORAGE_MANAGER", "KEYGUARD_SERVICE",
-            "FINGERPRINT_SERVICE", "TRUST_MANAGER", "NETWORK_STATS", "USB_SERVICE"
+        // ===== ДАННЫЕ =====
+        const target = {
+            name: "Вася Петров",
+            password: "Barsik2008",
+            clues: ["Барсик", "2008", "15.06"]
+        };
+
+        let foundClues = [];
+        let attempts = 3;
+        let money = 0;
+        let reputation = 100;
+        let gameOver = false;
+
+        // ===== КОНТЕНТ ПОСТОВ =====
+        const posts = [
+            { text: "Сегодня Барсик опять скинул вазу. Этот кот меня доконает! 😾", meta: "2 часа назад", clue: "Барсик" },
+            { text: "Смотрел матч Спартак - Зенит. Обидно проиграли...", meta: "5 часов назад", clue: null },
+            { text: "Днюха была огонь! Спасибо всем, кто пришёл! 🎂", meta: "3 дня назад", clue: null },
+            { text: "Купил новый корм для кота. Барсик доволен.", meta: "1 неделя назад", clue: null },
+            { text: "Кто в CS:GO? Го катать вечером.", meta: "2 недели назад", clue: null },
         ];
 
-        const errorMessages = [
-            "Ошибка драйвера: 0x000000A5",
-            "Не удалось прочитать сектор",
-            "SYSTEM_FAILURE",
-            "Критическая ошибка ядра",
-            "Потеря пакетов данных",
-            "ACCESS_DENIED",
-            "Ошибка записи в реестр",
-            "MEMORY_CORRUPTION",
-            "Драйвер не отвечает",
-            "DATA_LOSS_DETECTED",
-            "Повреждение файловой системы",
-            "Недостаточно прав",
-            "Сбой при чтении SMS",
-            "Ошибка шифрования",
-            "STACK_OVERFLOW",
-            "Переполнение буфера"
+        const photos = [
+            { emoji: "🎂", caption: "День рождения! Торт с цифрой 15", clue: "15.06" },
+            { emoji: "🐱", caption: "Мой кот Барсик", clue: null },
+            { emoji: "⚽", caption: "На матче Спартака", clue: null },
+            { emoji: "🎮", caption: "Играю в CS", clue: null },
         ];
 
-        let progress = 0;
-        let popupInterval;
-        let logInterval;
-        const logEl = document.getElementById('log');
-        const progressBar = document.getElementById('progress-bar');
-        const finalScreen = document.getElementById('finalScreen');
+        const friends = [
+            { name: "Петя Иванов", emoji: "👦", clue: null },
+            { name: "Маша Сидорова", emoji: "👧", clue: null },
+            { name: "Коля Смирнов", emoji: "🧑", clue: null },
+            { name: "Аня Кузнецова", emoji: "👩", clue: null },
+        ];
 
-        // ===== ЗАПУСК ПО КНОПКЕ =====
-        document.getElementById('playBtn').addEventListener('click', function() {
-            // Скрываем стартовый экран
-            document.getElementById('startScreen').style.display = 'none';
+        // ===== ОТРИСОВКА =====
+        function renderContent(tab) {
+            const content = document.getElementById('content');
+            content.innerHTML = '';
 
-            // Показываем элементы основного экрана
-            document.getElementById('mainTitle').style.display = 'block';
-            document.getElementById('progressContainer').style.display = 'block';
-            document.getElementById('log').style.display = 'block';
+            if (tab === 'posts') {
+                posts.forEach((post, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'post';
+                    if (post.clue && foundClues.includes(post.clue)) div.classList.add('found');
+                    div.innerHTML = `<div class="text">${post.text}</div><div class="meta">${post.meta}</div>`;
+                    div.addEventListener('click', () => findClue(post.clue, i));
+                    content.appendChild(div);
+                });
+            } else if (tab === 'photos') {
+                const grid = document.createElement('div');
+                grid.className = 'photo-grid';
+                photos.forEach((photo, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    if (photo.clue && foundClues.includes(photo.clue)) div.classList.add('found');
+                    div.innerHTML = `${photo.emoji}<div style="font-size:11px; color:#888; margin-top:5px;">${photo.caption}</div>`;
+                    div.addEventListener('click', () => findClue(photo.clue, i));
+                    grid.appendChild(div);
+                });
+                content.appendChild(grid);
+            } else if (tab === 'friends') {
+                friends.forEach((friend, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'friend';
+                    div.innerHTML = `<div class="f-avatar">${friend.emoji}</div><div class="f-name">${friend.name}</div>`;
+                    div.addEventListener('click', () => findClue(friend.clue, i));
+                    content.appendChild(div);
+                });
+            }
+        }
 
-            // Запускаем весь прикол
-            startHack();
+        // ===== ПОИСК ПОДСКАЗКИ =====
+        function findClue(clue, index) {
+            if (!clue) {
+                // Пустышка — ничего не найдено
+                showMessage("Ничего интересного...", "fail");
+                return;
+            }
+            if (foundClues.includes(clue)) {
+                showMessage("Эта подсказка уже найдена.", "fail");
+                return;
+            }
+            foundClues.push(clue);
+            updateClues();
+            renderContent(document.querySelector('.tab.active').dataset.tab);
+            showMessage(`🔍 Найдена подсказка: ${clue}`, "success");
+        }
+
+        // ===== ОБНОВЛЕНИЕ ПОДСКАЗОК =====
+        function updateClues() {
+            const list = document.getElementById('clueList');
+            if (foundClues.length === 0) {
+                list.innerHTML = '<div class="clue-empty">Пока ничего не найдено... Ищи внимательно.</div>';
+            } else {
+                list.innerHTML = foundClues.map(c => `<div class="clue-item">✓ ${c}</div>`).join('');
+            }
+        }
+
+        // ===== СООБЩЕНИЕ =====
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = type;
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+
+        // ===== ПРОВЕРКА ПАРОЛЯ =====
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            if (gameOver) return;
+            const input = document.getElementById('passwordInput').value.trim();
+
+            if (input === target.password) {
+                // УСПЕХ
+                gameOver = true;
+                money += 1000;
+                reputation += 50;
+                updateStats();
+                showMessage("✅ ДОСТУП ПОЛУЧЕН! +1000₽, +50 репутации", "success");
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('nextBtn').style.display = 'block';
+            } else {
+                // ПРОВАЛ
+                attempts--;
+                document.getElementById('attempts').textContent = `Попыток осталось: ${attempts}`;
+                if (attempts <= 0) {
+                    gameOver = true;
+                    reputation -= 20;
+                    updateStats();
+                    showMessage("❌ ВЗЛОМ НЕ УДАЛСЯ. -20 репутации", "fail");
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('nextBtn').style.display = 'block';
+                } else {
+                    showMessage(`❌ Неверный пароль. Осталось попыток: ${attempts}`, "fail");
+                }
+            }
         });
 
-        function startHack() {
-            // Прогресс-бар на 5 секунд
-            const totalTime = 5000;
-            const interval = 50;
-            const step = 100 / (totalTime / interval);
-
-            const progressInterval = setInterval(() => {
-                progress += step;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(progressInterval);
-                    clearInterval(logInterval);
-                    clearInterval(popupInterval);
-                    progressBar.style.background = '#00ff00';
-                    logEl.textContent = "ПЕРЕДАЧА ЗАВЕРШЕНА";
-
-                    setTimeout(() => {
-                        finalScreen.style.display = 'flex';
-                    }, 1000);
-                }
-                progressBar.style.width = progress + '%';
-            }, interval);
-
-            // Быстрый текст
-            logInterval = setInterval(() => {
-                const msg = logMessages[Math.floor(Math.random() * logMessages.length)];
-                logEl.textContent = msg;
-            }, 200);
-
-            // Всплывающие окна
-            popupInterval = setInterval(() => {
-                createPopup();
-                if (Math.random() > 0.7) createPopup();
-                if (Math.random() > 0.9) createPopup();
-            }, 200);
+        // ===== ОБНОВЛЕНИЕ СТАТИСТИКИ =====
+        function updateStats() {
+            document.getElementById('money').textContent = money;
+            document.getElementById('reputation').textContent = reputation;
         }
 
-        function createPopup() {
-            const popup = document.createElement('div');
-            popup.className = 'popup';
+        // ===== СЛЕДУЮЩЕЕ ЗАДАНИЕ (заглушка) =====
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            showMessage("Новое задание скоро... (в разработке)", "success");
+        });
 
-            const title = document.createElement('div');
-            title.className = 'title';
-            title.textContent = 'system32.dll';
+        // ===== ТАБЫ =====
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderContent(tab.dataset.tab);
+            });
+        });
 
-            const text = document.createElement('div');
-            text.textContent = errorMessages[Math.floor(Math.random() * errorMessages.length)];
-
-            popup.appendChild(title);
-            popup.appendChild(text);
-
-            const x = Math.random() * (window.innerWidth - 200);
-            const y = Math.random() * (window.innerHeight - 80);
-            popup.style.left = x + 'px';
-            popup.style.top = y + 'px';
-
-            document.body.appendChild(popup);
-
-            const life = 300 + Math.random() * 500;
-            setTimeout(() => {
-                popup.remove();
-            }, life);
-        }
+        // ===== СТАРТ =====
+        renderContent('posts');
+        updateStats();
     </script>
 </body>
 </html>
