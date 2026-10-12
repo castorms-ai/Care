@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Взлом профиля</title>
+    <title>Тёмный заказчик</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #0d0d0d;
+            background: #0a0a0a;
             color: #e0e0e0;
             font-family: 'Courier New', monospace;
             height: 100vh;
-            overflow-y: auto;
-            padding: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ===== ШАПКА ===== */
@@ -23,70 +24,167 @@
             align-items: center;
             background: #1a1a1a;
             padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #333;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
         }
-        #header .stat {
-            font-size: 14px;
-        }
-        #header .stat span {
-            color: #00ff00;
-            font-weight: bold;
-        }
+        #header .stat { font-size: 14px; }
+        #header .stat span { color: #00ff00; font-weight: bold; }
         #reputation { color: #ffaa00; }
 
-        /* ===== ПРОФИЛЬ ===== */
+        /* ===== ЧАТ ===== */
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #0d0d0d;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.anon {
+            align-self: flex-start;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #ddd;
+        }
+        .message.anon .sender {
+            color: #ff4444;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .message.user {
+            align-self: flex-end;
+            background: #1a3a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .message .time {
+            font-size: 10px;
+            color: #666;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        /* ===== КНОПКИ ЗАДАНИЯ ===== */
+        .task-buttons {
+            display: flex;
+            gap: 10px;
+            align-self: flex-start;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+        .task-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .task-btn.accept {
+            background: #00ff00;
+            color: #000;
+        }
+        .task-btn.accept:hover { background: #00cc00; }
+        .task-btn.decline {
+            background: #333;
+            color: #aaa;
+        }
+        .task-btn.decline:hover { background: #444; }
+
+        /* ===== ПАНЕЛЬ ВЗЛОМА ===== */
+        #hackPanel {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #0a0a0a;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        #hackPanel.active { display: flex; }
+
+        #hackHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 15px;
+        }
+        #hackHeader h2 {
+            color: #ff4444;
+            font-size: 18px;
+        }
+        #closeHack {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ===== ПРОФИЛЬ ЦЕЛИ ===== */
         #profile {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 15px;
         }
         #profile .avatar {
-            width: 70px;
-            height: 70px;
+            width: 60px; height: 60px;
             border-radius: 50%;
             background: #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
+            font-size: 26px;
             margin-bottom: 10px;
         }
-        #profile h2 {
-            color: #fff;
-            font-size: 20px;
-        }
-        #profile .username {
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        #profile .info {
-            font-size: 13px;
-            color: #aaa;
-            line-height: 1.6;
-        }
+        #profile h2 { color: #fff; font-size: 18px; }
+        #profile .username { color: #888; font-size: 13px; margin-bottom: 6px; }
+        #profile .info { font-size: 12px; color: #aaa; line-height: 1.5; }
 
         /* ===== ТАБЫ ===== */
         #tabs {
             display: flex;
             gap: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
         }
         .tab {
-            padding: 8px 16px;
+            padding: 8px 14px;
             background: #1a1a1a;
             border: 1px solid #333;
             color: #aaa;
             border-radius: 20px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            transition: 0.2s;
         }
         .tab.active {
             background: #00ff00;
@@ -95,164 +193,124 @@
             border-color: #00ff00;
         }
 
-        /* ===== КОНТЕНТ ===== */
         #content {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 15px;
-            min-height: 200px;
-            margin-bottom: 15px;
+            padding: 12px;
+            min-height: 150px;
+            margin-bottom: 12px;
         }
         .post {
             border-bottom: 1px solid #2a2a2a;
-            padding: 12px 0;
+            padding: 10px 0;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 13px;
         }
         .post:last-child { border-bottom: none; }
-        .post:hover { background: #222; padding-left: 8px; }
-        .post.found {
-            background: #1a3a1a;
-            border-left: 3px solid #00ff00;
-            padding-left: 10px;
-        }
-        .post .text {
-            font-size: 14px;
-            color: #ddd;
-            line-height: 1.5;
-        }
-        .post .meta {
-            font-size: 11px;
-            color: #666;
-            margin-top: 5px;
-        }
+        .post:hover { background: #222; padding-left: 6px; }
+        .post.found { background: #1a3a1a; border-left: 3px solid #00ff00; padding-left: 8px; }
+        .post .meta { font-size: 10px; color: #666; margin-top: 4px; }
+
         .photo-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
         .photo-item {
             background: #222;
             border-radius: 8px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
-            font-size: 40px;
+            font-size: 32px;
             cursor: pointer;
-            transition: 0.2s;
             border: 2px solid transparent;
         }
         .photo-item:hover { background: #2a2a2a; }
         .photo-item.found { border-color: #00ff00; background: #1a3a1a; }
+
         .friend {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             padding: 8px 0;
             cursor: pointer;
             border-bottom: 1px solid #2a2a2a;
+            font-size: 13px;
         }
         .friend:last-child { border-bottom: none; }
         .friend:hover { background: #222; }
-        .friend.found { background: #1a3a1a; padding-left: 8px; }
         .friend .f-avatar {
-            width: 35px; height: 35px;
+            width: 30px; height: 30px;
             border-radius: 50%;
             background: #333;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 16px;
+            font-size: 14px;
         }
-        .friend .f-name { font-size: 14px; color: #ddd; }
 
         /* ===== ПОДСКАЗКИ ===== */
         #clues {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
         }
-        #clues h3 {
-            font-size: 14px;
-            color: #ffaa00;
-            margin-bottom: 10px;
-        }
-        .clue-item {
-            font-size: 13px;
-            color: #00ff00;
-            padding: 5px 0;
-            border-bottom: 1px solid #2a2a2a;
-        }
-        .clue-item:last-child { border-bottom: none; }
-        .clue-empty {
-            color: #555;
-            font-size: 13px;
-            font-style: italic;
-        }
+        #clues h3 { font-size: 13px; color: #ffaa00; margin-bottom: 8px; }
+        .clue-item { font-size: 12px; color: #00ff00; padding: 3px 0; }
+        .clue-empty { color: #555; font-size: 12px; font-style: italic; }
 
         /* ===== ВВОД ПАРОЛЯ ===== */
         #passwordSection {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
         }
-        #passwordSection h3 {
-            font-size: 14px;
-            color: #fff;
-            margin-bottom: 10px;
-        }
+        #passwordSection h3 { font-size: 13px; color: #fff; margin-bottom: 8px; }
         #passwordInput {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #0d0d0d;
             border: 1px solid #333;
             border-radius: 8px;
             color: #00ff00;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
-            margin-bottom: 10px;
+            font-size: 15px;
+            margin-bottom: 8px;
             outline: none;
         }
         #passwordInput:focus { border-color: #00ff00; }
         #submitBtn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #00ff00;
             color: #000;
             border: none;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
         }
-        #submitBtn:hover { background: #00cc00; }
         #submitBtn:disabled { background: #333; color: #666; cursor: not-allowed; }
-        #attempts {
-            font-size: 13px;
-            color: #ff6666;
-            margin-top: 8px;
-            text-align: center;
-        }
+        #attempts { font-size: 12px; color: #ff6666; margin-top: 6px; text-align: center; }
 
         /* ===== СООБЩЕНИЕ ===== */
         #message {
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: none;
         }
         #message.success { background: #1a3a1a; color: #00ff00; border: 1px solid #00ff00; display: block; }
         #message.fail { background: #3a1a1a; color: #ff4444; border: 1px solid #ff4444; display: block; }
 
-        /* ===== КНОПКА НОВОГО ЗАДАНИЯ ===== */
         #nextBtn {
             width: 100%;
             padding: 12px;
@@ -261,10 +319,11 @@
             border: none;
             border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             cursor: pointer;
             display: none;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -276,57 +335,59 @@
         <div class="stat">⭐ <span id="reputation">100</span></div>
     </div>
 
-    <!-- ПРОФИЛЬ -->
-    <div id="profile">
-        <div class="avatar">👤</div>
-        <h2>Вася Петров</h2>
-        <div class="username">@vasya_2008</div>
-        <div class="info">
-            🎂 15.06.2008<br>
-            🏙 Москва<br>
-            ⚽ Спартак<br>
-            🐱 Кот Барсик
+    <!-- ЧАТ -->
+    <div id="chat"></div>
+
+    <!-- ПАНЕЛЬ ВЗЛОМА (скрыта) -->
+    <div id="hackPanel">
+        <div id="hackHeader">
+            <h2>🔓 ВЗЛОМ: Вася Петров</h2>
+            <button id="closeHack">ЗАКРЫТЬ</button>
         </div>
-    </div>
 
-    <!-- ТАБЫ -->
-    <div id="tabs">
-        <button class="tab active" data-tab="posts">📝 Посты</button>
-        <button class="tab" data-tab="photos">📷 Фото</button>
-        <button class="tab" data-tab="friends">👥 Друзья</button>
-    </div>
-
-    <!-- КОНТЕНТ -->
-    <div id="content"></div>
-
-    <!-- ПОДСКАЗКИ -->
-    <div id="clues">
-        <h3>🔍 Найденные подсказки:</h3>
-        <div id="clueList">
-            <div class="clue-empty">Пока ничего не найдено... Ищи внимательно.</div>
+        <div id="profile">
+            <div class="avatar">👤</div>
+            <h2>Вася Петров</h2>
+            <div class="username">@vasya_2008</div>
+            <div class="info">
+                🎂 15.06.2008<br>
+                🏙 Москва<br>
+                ⚽ Спартак<br>
+                🐱 Кот Барсик
+            </div>
         </div>
+
+        <div id="tabs">
+            <button class="tab active" data-tab="posts">📝 Посты</button>
+            <button class="tab" data-tab="photos">📷 Фото</button>
+            <button class="tab" data-tab="friends">👥 Друзья</button>
+        </div>
+
+        <div id="content"></div>
+
+        <div id="clues">
+            <h3>🔍 Найденные подсказки:</h3>
+            <div id="clueList">
+                <div class="clue-empty">Пока ничего не найдено...</div>
+            </div>
+        </div>
+
+        <div id="passwordSection">
+            <h3>🔐 Введи пароль:</h3>
+            <input type="text" id="passwordInput" placeholder="Пароль..." autocomplete="off">
+            <button id="submitBtn">ВЗЛОМАТЬ</button>
+            <div id="attempts">Попыток осталось: 3</div>
+        </div>
+
+        <div id="message"></div>
+        <button id="nextBtn">СЛЕДУЮЩЕЕ ЗАДАНИЕ</button>
     </div>
-
-    <!-- ВВОД ПАРОЛЯ -->
-    <div id="passwordSection">
-        <h3>🔐 Введи пароль:</h3>
-        <input type="text" id="passwordInput" placeholder="Пароль..." autocomplete="off">
-        <button id="submitBtn">ВЗЛОМАТЬ</button>
-        <div id="attempts">Попыток осталось: 3</div>
-    </div>
-
-    <!-- СООБЩЕНИЕ -->
-    <div id="message"></div>
-
-    <!-- КНОПКА СЛЕДУЮЩЕГО ЗАДАНИЯ -->
-    <button id="nextBtn">СЛЕДУЮЩЕЕ ЗАДАНИЕ</button>
 
     <script>
         // ===== ДАННЫЕ =====
         const target = {
             name: "Вася Петров",
             password: "Barsik2008",
-            clues: ["Барсик", "2008", "15.06"]
         };
 
         let foundClues = [];
@@ -334,8 +395,8 @@
         let money = 0;
         let reputation = 100;
         let gameOver = false;
+        let currentTask = null;
 
-        // ===== КОНТЕНТ ПОСТОВ =====
         const posts = [
             { text: "Сегодня Барсик опять скинул вазу. Этот кот меня доконает! 😾", meta: "2 часа назад", clue: "Барсик" },
             { text: "Смотрел матч Спартак - Зенит. Обидно проиграли...", meta: "5 часов назад", clue: null },
@@ -358,7 +419,73 @@
             { name: "Аня Кузнецова", emoji: "👩", clue: null },
         ];
 
-        // ===== ОТРИСОВКА =====
+        // ===== ЧАТ =====
+        const chat = document.getElementById('chat');
+
+        function addMessage(text, sender = 'anon', delay = 0) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = `message ${sender}`;
+                    const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                    
+                    if (sender === 'anon') {
+                        div.innerHTML = `<div class="sender">_X_</div>${text}<div class="time">${time}</div>`;
+                    } else {
+                        div.innerHTML = `${text}<div class="time">${time}</div>`;
+                    }
+                    
+                    chat.appendChild(div);
+                    chat.scrollTop = chat.scrollHeight;
+                    resolve();
+                }, delay);
+            });
+        }
+
+        // ===== НАЧАЛО ИГРЫ =====
+        async function startGame() {
+            await addMessage("Привет.", "anon", 500);
+            await addMessage("Ты знаешь, зачем я здесь.", "anon", 1200);
+            await addMessage("Я даю тебе работу. Ты выполняешь. Деньги получаешь.", "anon", 2500);
+            await addMessage("Если попадёшься — меня не знаешь. Договорились?", "anon", 4000);
+            await addMessage("Первое задание простое. Взломай страницу одноклассника. Его зовут Вася Петров.", "anon", 5500);
+            await addMessage("Найди подсказки в его профиле. Угадаешь пароль — получишь 1000₽.", "anon", 7000);
+            await addMessage("⚠️ 3 попытки. Провалишь — потеряешь 20 репутации.", "anon", 8500);
+
+            // Кнопки задания
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    const buttons = document.createElement('div');
+                    buttons.className = 'task-buttons';
+                    buttons.innerHTML = `
+                        <button class="task-btn accept" id="acceptBtn">✅ ПРИНЯТЬ</button>
+                        <button class="task-btn decline" id="declineBtn">❌ ОТКЛОНИТЬ</button>
+                    `;
+                    chat.appendChild(buttons);
+                    chat.scrollTop = chat.scrollHeight;
+
+                    document.getElementById('acceptBtn').addEventListener('click', () => {
+                        buttons.remove();
+                        addMessage("Принято. Удачи.", "anon", 500);
+                        addMessage("Открываю доступ к его странице...", "anon", 1500);
+                        setTimeout(() => {
+                            document.getElementById('hackPanel').classList.add('active');
+                        }, 2000);
+                        resolve();
+                    });
+
+                    document.getElementById('declineBtn').addEventListener('click', () => {
+                        buttons.remove();
+                        addMessage("Хм. Ладно. Но учти, я не люблю отказы.", "anon", 500);
+                        addMessage("Предлагаю ещё раз. Взломай Васю.", "anon", 1500);
+                        startGame();
+                        resolve();
+                    });
+                }, 10000);
+            });
+        }
+
+        // ===== ОТРИСОВКА КОНТЕНТА =====
         function renderContent(tab) {
             const content = document.getElementById('content');
             content.innerHTML = '';
@@ -368,42 +495,41 @@
                     const div = document.createElement('div');
                     div.className = 'post';
                     if (post.clue && foundClues.includes(post.clue)) div.classList.add('found');
-                    div.innerHTML = `<div class="text">${post.text}</div><div class="meta">${post.meta}</div>`;
-                    div.addEventListener('click', () => findClue(post.clue, i));
+                    div.innerHTML = `<div>${post.text}</div><div class="meta">${post.meta}</div>`;
+                    div.addEventListener('click', () => findClue(post.clue));
                     content.appendChild(div);
                 });
             } else if (tab === 'photos') {
                 const grid = document.createElement('div');
                 grid.className = 'photo-grid';
-                photos.forEach((photo, i) => {
+                photos.forEach((photo) => {
                     const div = document.createElement('div');
                     div.className = 'photo-item';
                     if (photo.clue && foundClues.includes(photo.clue)) div.classList.add('found');
-                    div.innerHTML = `${photo.emoji}<div style="font-size:11px; color:#888; margin-top:5px;">${photo.caption}</div>`;
-                    div.addEventListener('click', () => findClue(photo.clue, i));
+                    div.innerHTML = `${photo.emoji}<div style="font-size:10px; color:#888; margin-top:4px;">${photo.caption}</div>`;
+                    div.addEventListener('click', () => findClue(photo.clue));
                     grid.appendChild(div);
                 });
                 content.appendChild(grid);
             } else if (tab === 'friends') {
-                friends.forEach((friend, i) => {
+                friends.forEach((friend) => {
                     const div = document.createElement('div');
                     div.className = 'friend';
-                    div.innerHTML = `<div class="f-avatar">${friend.emoji}</div><div class="f-name">${friend.name}</div>`;
-                    div.addEventListener('click', () => findClue(friend.clue, i));
+                    div.innerHTML = `<div class="f-avatar">${friend.emoji}</div><div>${friend.name}</div>`;
+                    div.addEventListener('click', () => findClue(friend.clue));
                     content.appendChild(div);
                 });
             }
         }
 
         // ===== ПОИСК ПОДСКАЗКИ =====
-        function findClue(clue, index) {
+        function findClue(clue) {
             if (!clue) {
-                // Пустышка — ничего не найдено
                 showMessage("Ничего интересного...", "fail");
                 return;
             }
             if (foundClues.includes(clue)) {
-                showMessage("Эта подсказка уже найдена.", "fail");
+                showMessage("Уже найдено.", "fail");
                 return;
             }
             foundClues.push(clue);
@@ -412,17 +538,15 @@
             showMessage(`🔍 Найдена подсказка: ${clue}`, "success");
         }
 
-        // ===== ОБНОВЛЕНИЕ ПОДСКАЗОК =====
         function updateClues() {
             const list = document.getElementById('clueList');
             if (foundClues.length === 0) {
-                list.innerHTML = '<div class="clue-empty">Пока ничего не найдено... Ищи внимательно.</div>';
+                list.innerHTML = '<div class="clue-empty">Пока ничего не найдено...</div>';
             } else {
                 list.innerHTML = foundClues.map(c => `<div class="clue-item">✓ ${c}</div>`).join('');
             }
         }
 
-        // ===== СООБЩЕНИЕ =====
         function showMessage(text, type) {
             const msg = document.getElementById('message');
             msg.textContent = text;
@@ -436,7 +560,6 @@
             const input = document.getElementById('passwordInput').value.trim();
 
             if (input === target.password) {
-                // УСПЕХ
                 gameOver = true;
                 money += 1000;
                 reputation += 50;
@@ -445,7 +568,6 @@
                 document.getElementById('submitBtn').disabled = true;
                 document.getElementById('nextBtn').style.display = 'block';
             } else {
-                // ПРОВАЛ
                 attempts--;
                 document.getElementById('attempts').textContent = `Попыток осталось: ${attempts}`;
                 if (attempts <= 0) {
@@ -456,20 +578,26 @@
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('nextBtn').style.display = 'block';
                 } else {
-                    showMessage(`❌ Неверный пароль. Осталось попыток: ${attempts}`, "fail");
+                    showMessage(`❌ Неверный пароль. Осталось: ${attempts}`, "fail");
                 }
             }
         });
 
-        // ===== ОБНОВЛЕНИЕ СТАТИСТИКИ =====
         function updateStats() {
             document.getElementById('money').textContent = money;
             document.getElementById('reputation').textContent = reputation;
         }
 
-        // ===== СЛЕДУЮЩЕЕ ЗАДАНИЕ (заглушка) =====
+        // ===== ЗАКРЫТИЕ ПАНЕЛИ =====
+        document.getElementById('closeHack').addEventListener('click', () => {
+            document.getElementById('hackPanel').classList.remove('active');
+        });
+
+        // ===== СЛЕДУЮЩЕЕ ЗАДАНИЕ =====
         document.getElementById('nextBtn').addEventListener('click', () => {
-            showMessage("Новое задание скоро... (в разработке)", "success");
+            document.getElementById('hackPanel').classList.remove('active');
+            addMessage("Неплохо. Держи награду. Следующее задание скоро...", "anon", 500);
+            addMessage("(В разработке)", "anon", 2000);
         });
 
         // ===== ТАБЫ =====
@@ -482,8 +610,8 @@
         });
 
         // ===== СТАРТ =====
-        renderContent('posts');
         updateStats();
+        startGame();
     </script>
 </body>
 </html>
