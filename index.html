@@ -40,6 +40,7 @@
             flex-direction: column;
             gap: 12px;
             background: #0d0d0d;
+            scroll-behavior: smooth;
         }
 
         .message {
@@ -395,7 +396,6 @@
         let money = 0;
         let reputation = 100;
         let gameOver = false;
-        let currentTask = null;
 
         const posts = [
             { text: "Сегодня Барсик опять скинул вазу. Этот кот меня доконает! 😾", meta: "2 часа назад", clue: "Барсик" },
@@ -436,7 +436,12 @@
                     }
                     
                     chat.appendChild(div);
-                    chat.scrollTop = chat.scrollHeight;
+                    
+                    // АВТОСКРОЛЛ
+                    setTimeout(() => {
+                        chat.scrollTop = chat.scrollHeight;
+                    }, 50);
+                    
                     resolve();
                 }, delay);
             });
@@ -462,7 +467,7 @@
                         <button class="task-btn decline" id="declineBtn">❌ ОТКЛОНИТЬ</button>
                     `;
                     chat.appendChild(buttons);
-                    chat.scrollTop = chat.scrollHeight;
+                    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
 
                     document.getElementById('acceptBtn').addEventListener('click', () => {
                         buttons.remove();
@@ -491,7 +496,7 @@
             content.innerHTML = '';
 
             if (tab === 'posts') {
-                posts.forEach((post, i) => {
+                posts.forEach((post) => {
                     const div = document.createElement('div');
                     div.className = 'post';
                     if (post.clue && foundClues.includes(post.clue)) div.classList.add('found');
