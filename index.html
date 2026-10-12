@@ -19,6 +19,7 @@
             padding: 20px;
             text-align: center;
             position: relative;
+            transition: background 0.5s;
         }
         h1 {
             font-size: 36px;
@@ -56,7 +57,7 @@
             z-index: 10;
         }
 
-        /* Стиль для всплывающих "драйверов" */
+        /* Всплывающие "драйверы" */
         .popup {
             position: fixed;
             background: black;
@@ -66,7 +67,7 @@
             font-family: 'Courier New', monospace;
             font-size: 13px;
             z-index: 999;
-            pointer-events: none; /* чтобы не мешали нажимать */
+            pointer-events: none;
             box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
         .popup .title {
@@ -75,6 +76,37 @@
             padding-bottom: 3px;
             margin-bottom: 3px;
             font-size: 11px;
+        }
+
+        /* Финальный экран с черепом */
+        #finalScreen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: black;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+        #skull {
+            font-size: 150px;
+            color: red;
+            text-shadow: 0 0 30px red, 0 0 60px red;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        #finalText {
+            color: red;
+            font-size: 24px;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px red;
         }
     </style>
 </head>
@@ -86,6 +118,12 @@
     </div>
 
     <div id="log">Инициализация...</div>
+
+    <!-- Финальный экран -->
+    <div id="finalScreen">
+        <div id="skull">☠</div>
+        <div id="finalText">ДАННЫЕ УКРАДЕНЫ</div>
+    </div>
 
     <script>
         const logMessages = [
@@ -120,8 +158,10 @@
         ];
 
         let progress = 0;
+        let popupInterval;
         const logEl = document.getElementById('log');
         const progressBar = document.getElementById('progress-bar');
+        const finalScreen = document.getElementById('finalScreen');
 
         // Прогресс-бар на 5 секунд
         const totalTime = 5000;
@@ -134,8 +174,14 @@
                 progress = 100;
                 clearInterval(progressInterval);
                 clearInterval(logInterval);
+                clearInterval(popupInterval); // останавливаем окна
                 progressBar.style.background = '#00ff00';
                 logEl.textContent = "ПЕРЕДАЧА ЗАВЕРШЕНА";
+                
+                // Через 1 секунду показываем финальный экран
+                setTimeout(() => {
+                    finalScreen.style.display = 'flex';
+                }, 1000);
             }
             progressBar.style.width = progress + '%';
         }, interval);
@@ -161,7 +207,6 @@
             popup.appendChild(title);
             popup.appendChild(text);
 
-            // Случайная позиция
             const x = Math.random() * (window.innerWidth - 200);
             const y = Math.random() * (window.innerHeight - 80);
             popup.style.left = x + 'px';
@@ -169,17 +214,15 @@
 
             document.body.appendChild(popup);
 
-            // Удаляем окно через случайное время (0.3 - 0.8 сек)
             const life = 300 + Math.random() * 500;
             setTimeout(() => {
                 popup.remove();
             }, life);
         }
 
-        // Запускаем создание окон каждые 150-300 мс
-        setInterval(() => {
+        // Запускаем создание окон
+        popupInterval = setInterval(() => {
             createPopup();
-            // Иногда создаём сразу 2-3 окна для эффекта "шторма"
             if (Math.random() > 0.7) createPopup();
             if (Math.random() > 0.9) createPopup();
         }, 200);
