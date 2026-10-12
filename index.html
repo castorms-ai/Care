@@ -11,12 +11,14 @@
             color: white;
             font-family: 'Courier New', monospace;
             height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
             text-align: center;
+            position: relative;
         }
         h1 {
             font-size: 36px;
@@ -25,6 +27,7 @@
             letter-spacing: 3px;
             font-family: Arial, sans-serif;
             white-space: nowrap;
+            z-index: 10;
         }
         .progress-container {
             width: 85%;
@@ -33,6 +36,7 @@
             border: 2px solid white;
             margin-bottom: 25px;
             background: #000055;
+            z-index: 10;
         }
         #progress-bar {
             height: 100%;
@@ -49,6 +53,28 @@
             overflow: hidden;
             text-align: center;
             font-family: 'Courier New', monospace;
+            z-index: 10;
+        }
+
+        /* Стиль для всплывающих "драйверов" */
+        .popup {
+            position: fixed;
+            background: black;
+            color: white;
+            border: 2px solid white;
+            padding: 8px 14px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            z-index: 999;
+            pointer-events: none; /* чтобы не мешали нажимать */
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .popup .title {
+            font-weight: bold;
+            border-bottom: 1px solid #444;
+            padding-bottom: 3px;
+            margin-bottom: 3px;
+            font-size: 11px;
         }
     </style>
 </head>
@@ -74,6 +100,25 @@
             "FINGERPRINT_SERVICE", "TRUST_MANAGER", "NETWORK_STATS", "USB_SERVICE"
         ];
 
+        const errorMessages = [
+            "Ошибка драйвера: 0x000000A5",
+            "Не удалось прочитать сектор",
+            "SYSTEM_FAILURE",
+            "Критическая ошибка ядра",
+            "Потеря пакетов данных",
+            "ACCESS_DENIED",
+            "Ошибка записи в реестр",
+            "MEMORY_CORRUPTION",
+            "Драйвер не отвечает",
+            "DATA_LOSS_DETECTED",
+            "Повреждение файловой системы",
+            "Недостаточно прав",
+            "Сбой при чтении SMS",
+            "Ошибка шифрования",
+            "STACK_OVERFLOW",
+            "Переполнение буфера"
+        ];
+
         let progress = 0;
         const logEl = document.getElementById('log');
         const progressBar = document.getElementById('progress-bar');
@@ -95,10 +140,48 @@
             progressBar.style.width = progress + '%';
         }, interval);
 
-        // Быстро меняющийся текст каждые 0.2 секунды
+        // Быстрый текст
         const logInterval = setInterval(() => {
             const msg = logMessages[Math.floor(Math.random() * logMessages.length)];
             logEl.textContent = msg;
+        }, 200);
+
+        // Функция создания всплывающего окна
+        function createPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+
+            const title = document.createElement('div');
+            title.className = 'title';
+            title.textContent = 'system32.dll';
+
+            const text = document.createElement('div');
+            text.textContent = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+
+            popup.appendChild(title);
+            popup.appendChild(text);
+
+            // Случайная позиция
+            const x = Math.random() * (window.innerWidth - 200);
+            const y = Math.random() * (window.innerHeight - 80);
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+
+            document.body.appendChild(popup);
+
+            // Удаляем окно через случайное время (0.3 - 0.8 сек)
+            const life = 300 + Math.random() * 500;
+            setTimeout(() => {
+                popup.remove();
+            }, life);
+        }
+
+        // Запускаем создание окон каждые 150-300 мс
+        setInterval(() => {
+            createPopup();
+            // Иногда создаём сразу 2-3 окна для эффекта "шторма"
+            if (Math.random() > 0.7) createPopup();
+            if (Math.random() > 0.9) createPopup();
         }, 200);
     </script>
 </body>
