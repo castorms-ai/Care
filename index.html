@@ -19,32 +19,33 @@
             text-align: center;
         }
         h1 {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: bold;
-            margin-bottom: 40px;
-            letter-spacing: 4px;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
             font-family: Arial, sans-serif;
+            white-space: nowrap;
         }
         .progress-container {
-            width: 90%;
-            max-width: 500px;
-            height: 35px;
-            border: 3px solid white;
-            margin-bottom: 30px;
+            width: 85%;
+            max-width: 450px;
+            height: 28px;
+            border: 2px solid white;
+            margin-bottom: 25px;
             background: #000055;
         }
         #progress-bar {
             height: 100%;
             width: 0%;
             background: white;
-            transition: width 0.3s;
+            transition: width 0.1s;
         }
         #log {
-            font-size: 16px;
+            font-size: 15px;
             color: #ffffff;
-            height: 40px;
-            width: 90%;
-            max-width: 500px;
+            height: 30px;
+            width: 85%;
+            max-width: 450px;
             overflow: hidden;
             text-align: center;
             font-family: 'Courier New', monospace;
@@ -62,55 +63,24 @@
 
     <script>
         const logMessages = [
-            "SYSTEM_UI",
-            "SETTINGS_PROVIDER",
-            "SECURE_SETTINGS",
-            "WIFI_SERVICE",
-            "BLUETOOTH_SERVICE",
-            "AUDIO_SERVICE",
-            "CAMERA_SERVICE",
-            "LOCATION_SERVICE",
-            "PACKAGE_MANAGER",
-            "ACTIVITY_MANAGER",
-            "POWER_MANAGER",
-            "BATTERY_STATS",
-            "TELEPHONY_SERVICE",
-            "CONNECTIVITY_SERVICE",
-            "DOWNLOAD_MANAGER",
-            "ACCOUNT_MANAGER",
-            "CONTENT_PROVIDER",
-            "MEDIA_STORE",
-            "CONTACTS_PROVIDER",
-            "CALENDAR_PROVIDER",
-            "CALL_LOG",
-            "SMS_PROVIDER",
-            "USER_DICTIONARY",
-            "INPUT_METHOD",
-            "ACCESSIBILITY_SERVICE",
-            "NOTIFICATION_SERVICE",
-            "JOB_SCHEDULER",
-            "ALARM_MANAGER",
-            "VIBRATOR_SERVICE",
-            "SENSOR_SERVICE",
-            "STORAGE_MANAGER",
-            "KEYGUARD_SERVICE",
-            "FINGERPRINT_SERVICE",
-            "FACE_UNLOCK_SERVICE",
-            "TRUST_MANAGER",
-            "NETWORK_STATS",
-            "USB_SERVICE",
-            "HDMI_CONTROL",
-            "DREAM_SERVICE",
-            "PRINT_MANAGER"
+            "SYSTEM_UI", "SETTINGS_PROVIDER", "SECURE_SETTINGS", "WIFI_SERVICE",
+            "BLUETOOTH_SERVICE", "AUDIO_SERVICE", "CAMERA_SERVICE", "LOCATION_SERVICE",
+            "PACKAGE_MANAGER", "ACTIVITY_MANAGER", "POWER_MANAGER", "BATTERY_STATS",
+            "TELEPHONY_SERVICE", "CONNECTIVITY_SERVICE", "DOWNLOAD_MANAGER", "ACCOUNT_MANAGER",
+            "CONTENT_PROVIDER", "MEDIA_STORE", "CONTACTS_PROVIDER", "CALENDAR_PROVIDER",
+            "CALL_LOG", "SMS_PROVIDER", "USER_DICTIONARY", "INPUT_METHOD",
+            "ACCESSIBILITY_SERVICE", "NOTIFICATION_SERVICE", "JOB_SCHEDULER", "ALARM_MANAGER",
+            "VIBRATOR_SERVICE", "SENSOR_SERVICE", "STORAGE_MANAGER", "KEYGUARD_SERVICE",
+            "FINGERPRINT_SERVICE", "TRUST_MANAGER", "NETWORK_STATS", "USB_SERVICE"
         ];
 
         let progress = 0;
         const logEl = document.getElementById('log');
         const progressBar = document.getElementById('progress-bar');
 
-        // Прогресс-бар на 5 минут
-        const totalTime = 300000; // 5 минут
-        const interval = 100;
+        // Прогресс-бар на 5 секунд
+        const totalTime = 5000;
+        const interval = 50;
         const step = 100 / (totalTime / interval);
 
         const progressInterval = setInterval(() => {
