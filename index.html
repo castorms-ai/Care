@@ -1,59 +1,135 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра</title>
+    <title>SYSTEM</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            margin: 0;
+            background: #0000aa;
+            color: white;
+            font-family: 'Courier New', monospace;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #1a1a1a;
-            font-family: sans-serif;
+            padding: 20px;
+            text-align: center;
         }
-        #startBtn {
-            padding: 30px 60px;
-            font-size: 32px;
-            color: white;
-            background: #e63946;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(230, 57, 70, 0.6);
-            transition: 0.2s;
+        h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+            font-family: Arial, sans-serif;
         }
-        #startBtn:active {
-            transform: scale(0.95);
+        .progress-container {
+            width: 90%;
+            max-width: 500px;
+            height: 35px;
+            border: 3px solid white;
+            margin-bottom: 30px;
+            background: #000055;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: white;
+            transition: width 0.3s;
+        }
+        #log {
+            font-size: 16px;
+            color: #ffffff;
+            height: 40px;
+            width: 90%;
+            max-width: 500px;
+            overflow: hidden;
+            text-align: center;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
 <body>
-    <button id="startBtn">НАЧАТЬ</button>
+    <h1>ВЗЛОМ ДАННЫХ</h1>
 
-    <!-- Сюда положи свой файл со стонами -->
-    <audio id="moans">
-        <source src="moans.mp3" type="audio/mpeg">
-    </audio>
+    <div class="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div id="log">Инициализация...</div>
 
     <script>
-        const btn = document.getElementById('startBtn');
-        const moans = document.getElementById('moans');
-        let started = false;
+        const logMessages = [
+            "SYSTEM_UI",
+            "SETTINGS_PROVIDER",
+            "SECURE_SETTINGS",
+            "WIFI_SERVICE",
+            "BLUETOOTH_SERVICE",
+            "AUDIO_SERVICE",
+            "CAMERA_SERVICE",
+            "LOCATION_SERVICE",
+            "PACKAGE_MANAGER",
+            "ACTIVITY_MANAGER",
+            "POWER_MANAGER",
+            "BATTERY_STATS",
+            "TELEPHONY_SERVICE",
+            "CONNECTIVITY_SERVICE",
+            "DOWNLOAD_MANAGER",
+            "ACCOUNT_MANAGER",
+            "CONTENT_PROVIDER",
+            "MEDIA_STORE",
+            "CONTACTS_PROVIDER",
+            "CALENDAR_PROVIDER",
+            "CALL_LOG",
+            "SMS_PROVIDER",
+            "USER_DICTIONARY",
+            "INPUT_METHOD",
+            "ACCESSIBILITY_SERVICE",
+            "NOTIFICATION_SERVICE",
+            "JOB_SCHEDULER",
+            "ALARM_MANAGER",
+            "VIBRATOR_SERVICE",
+            "SENSOR_SERVICE",
+            "STORAGE_MANAGER",
+            "KEYGUARD_SERVICE",
+            "FINGERPRINT_SERVICE",
+            "FACE_UNLOCK_SERVICE",
+            "TRUST_MANAGER",
+            "NETWORK_STATS",
+            "USB_SERVICE",
+            "HDMI_CONTROL",
+            "DREAM_SERVICE",
+            "PRINT_MANAGER"
+        ];
 
-        btn.addEventListener('click', function() {
-            if (started) return;
-            started = true;
+        let progress = 0;
+        const logEl = document.getElementById('log');
+        const progressBar = document.getElementById('progress-bar');
 
-            // Скрываем кнопку
-            btn.style.display = 'none';
+        // Прогресс-бар на 5 минут
+        const totalTime = 300000; // 5 минут
+        const interval = 100;
+        const step = 100 / (totalTime / interval);
 
-            // Врубаем стоны на полную
-            moans.volume = 1.0;
-            moans.play();
-        });
+        const progressInterval = setInterval(() => {
+            progress += step;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(progressInterval);
+                clearInterval(logInterval);
+                progressBar.style.background = '#00ff00';
+                logEl.textContent = "ПЕРЕДАЧА ЗАВЕРШЕНА";
+            }
+            progressBar.style.width = progress + '%';
+        }, interval);
+
+        // Быстро меняющийся текст каждые 0.2 секунды
+        const logInterval = setInterval(() => {
+            const msg = logMessages[Math.floor(Math.random() * logMessages.length)];
+            logEl.textContent = msg;
+        }, 200);
     </script>
 </body>
 </html>
