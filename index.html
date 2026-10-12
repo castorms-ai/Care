@@ -12,6 +12,7 @@
             color: #e0e0e0;
             font-family: 'Courier New', monospace;
             height: 100vh;
+            height: 100dvh; /* для мобильных браузеров */
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -437,10 +438,9 @@
                     
                     chat.appendChild(div);
                     
-                    // АВТОСКРОЛЛ
-                    setTimeout(() => {
-                        chat.scrollTop = chat.scrollHeight;
-                    }, 50);
+                    // Мгновенный скролл + повторный через 100мс для надёжности
+                    chat.scrollTop = chat.scrollHeight;
+                    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 100);
                     
                     resolve();
                 }, delay);
@@ -457,7 +457,7 @@
             await addMessage("Найди подсказки в его профиле. Угадаешь пароль — получишь 1000₽.", "anon", 7000);
             await addMessage("⚠️ 3 попытки. Провалишь — потеряешь 20 репутации.", "anon", 8500);
 
-            // Кнопки задания
+            // Кнопки задания — через 2 секунды после последнего сообщения
             await new Promise(resolve => {
                 setTimeout(() => {
                     const buttons = document.createElement('div');
@@ -467,7 +467,10 @@
                         <button class="task-btn decline" id="declineBtn">❌ ОТКЛОНИТЬ</button>
                     `;
                     chat.appendChild(buttons);
-                    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
+                    
+                    // Скролл после добавления кнопок
+                    chat.scrollTop = chat.scrollHeight;
+                    setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 100);
 
                     document.getElementById('acceptBtn').addEventListener('click', () => {
                         buttons.remove();
@@ -486,7 +489,7 @@
                         startGame();
                         resolve();
                     });
-                }, 10000);
+                }, 2000);
             });
         }
 
